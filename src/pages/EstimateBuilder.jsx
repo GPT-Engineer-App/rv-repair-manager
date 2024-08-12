@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAddEstimate, usePreConfiguredRoofJobs } from "@/integrations/supabase"
+import { useAddEstimate, useRealtimePreConfiguredRoofJobs } from "@/integrations/supabase"
 
 const EstimateBuilder = () => {
   const [activeTab, setActiveTab] = useState("customer")
@@ -33,9 +33,15 @@ const EstimateBuilder = () => {
     tax: ""
   })
 
-  const { data: preConfiguredJobs, isLoading: jobsLoading } = usePreConfiguredRoofJobs()
+  const { data: preConfiguredJobs, isLoading: jobsLoading } = useRealtimePreConfiguredRoofJobs()
 
   const { mutate: addEstimate, isLoading, isError, error } = useAddEstimate()
+
+  useEffect(() => {
+    if (preConfiguredJobs && preConfiguredJobs.length > 0) {
+      console.log("Pre-configured jobs updated:", preConfiguredJobs);
+    }
+  }, [preConfiguredJobs]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target

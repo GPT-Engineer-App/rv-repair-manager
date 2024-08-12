@@ -207,8 +207,34 @@ export const useDeletePreConfiguredJob = () => {
 // Pre-configured Roof Jobs
 export const usePreConfiguredRoofJobs = () => useQuery({
     queryKey: ['preConfiguredRoofJobs'],
-    queryFn: () => fromSupabase(supabase.from('pre_configured_roof_jobs').select('*'))
+    queryFn: async () => {
+        const { data, error } = await supabase
+            .from('pre_configured_roof_jobs')
+            .select('*')
+            .order('job_name', { ascending: true });
+        if (error) throw error;
+        return data;
+    }
 });
+
+export const useRealtimePreConfiguredRoofJobs = () => {
+    const queryClient = useQueryClient();
+
+    useEffect(() => {
+        const channel = supabase
+            .channel('pre_configured_roof_jobs_changes')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'pre_configured_roof_jobs' }, (payload) => {
+                queryClient.invalidateQueries(['preConfiguredRoofJobs']);
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [queryClient]);
+
+    return usePreConfiguredRoofJobs();
+};
 
 export const useAddPreConfiguredRoofJob = () => {
     const queryClient = useQueryClient();
