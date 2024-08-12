@@ -3,16 +3,22 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { useSupabaseAuth } from "@/integrations/supabase/auth"
+import { supabase } from "@/integrations/supabase"
 
 const Login = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const { login } = useSupabaseAuth()
 
   const handleLogin = async (e) => {
     e.preventDefault()
-    await login(email, password)
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) throw error
+      // Redirect or update state on successful login
+    } catch (error) {
+      console.error('Error logging in:', error.message)
+      // Handle login error (e.g., show error message to user)
+    }
   }
 
   return (
