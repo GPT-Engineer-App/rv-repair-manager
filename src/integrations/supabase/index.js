@@ -160,7 +160,7 @@ export const useEstimate = (id) => useQuery({
 export const useAddEstimate = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (newEstimate) => fromSupabase(supabase.from('estimates').insert([newEstimate])),
+        mutationFn: (newEstimate) => fromSupabase(supabase.from('floor_estimates').insert([newEstimate])),
         onSuccess: () => {
             queryClient.invalidateQueries('estimates');
         },
