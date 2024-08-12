@@ -21,8 +21,17 @@ const Login = () => {
     setIsLoading(true)
     setError(null)
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) throw error
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) {
+        if (error.message === 'Invalid login credentials') {
+          throw new Error('Invalid email or password. Please try again.')
+        } else {
+          throw new Error(`Login failed: ${error.message}`)
+        }
+      }
+      if (!data.user) {
+        throw new Error('No user data returned. Please try again.')
+      }
       toast({
         title: "Login successful",
         description: "You have been logged in successfully.",
@@ -31,6 +40,11 @@ const Login = () => {
     } catch (error) {
       console.error('Error logging in:', error.message)
       setError(error.message)
+      toast({
+        title: "Login failed",
+        description: error.message,
+        variant: "destructive",
+      })
       toast({
         title: "Login failed",
         description: "Please check your credentials and try again.",
