@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAddEstimate, useRealtimePreConfiguredRoofJobs } from "@/integrations/supabase"
+import { useAddEstimate, useRealtimePreConfiguredRoofJobs, useCustomers } from "@/integrations/supabase"
+import { useToast } from "@/components/ui/use-toast"
 
 const EstimateBuilder = () => {
   const [activeTab, setActiveTab] = useState("customer")
@@ -34,8 +35,9 @@ const EstimateBuilder = () => {
   })
 
   const { data: preConfiguredJobs, isLoading: jobsLoading } = useRealtimePreConfiguredRoofJobs()
-
+  const { data: customers, isLoading: customersLoading } = useCustomers()
   const { mutate: addEstimate, isLoading, isError, error } = useAddEstimate()
+  const { toast } = useToast()
 
   useEffect(() => {
     if (preConfiguredJobs && preConfiguredJobs.length > 0) {
@@ -50,7 +52,26 @@ const EstimateBuilder = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    addEstimate(estimateData)
+    addEstimate(estimateData, {
+      onSuccess: () => {
+        toast({
+          title: "Estimate Created",
+          description: "Your estimate has been successfully created.",
+        })
+        // Reset form or navigate to a different page
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: `Failed to create estimate: ${error.message}`,
+          variant: "destructive",
+        })
+      }
+    })
+  }
+
+  if (jobsLoading || customersLoading) {
+    return <div>Loading...</div>
   }
 
   return (
