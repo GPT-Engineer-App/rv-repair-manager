@@ -19,15 +19,6 @@ const fromSupabase = async (query) => {
 
 /* supabase integration types
 
-### users
-
-| name     | type   | format  | required |
-|----------|--------|---------|----------|
-| id       | uuid   | string  | true     |
-| email    | text   | string  | true     |
-| password | text   | string  | true     |
-| role     | text   | string  | true     |
-
 ### customers
 
 | name    | type   | format  | required |
@@ -148,57 +139,6 @@ export const useDeleteCustomer = () => {
         mutationFn: (id) => fromSupabase(supabase.from('customers').delete().eq('id', id)),
         onSuccess: () => {
             queryClient.invalidateQueries('customers');
-        },
-    });
-};
-
-// Users
-export const useUsers = () => useQuery({
-    queryKey: ['users'],
-    queryFn: () => fromSupabase(supabase.from('users').select('*'))
-});
-
-export const useUser = (id) => useQuery({
-    queryKey: ['users', id],
-    queryFn: () => fromSupabase(supabase.from('users').select('*').eq('id', id).single())
-});
-
-export const useAddUser = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (newUser) => {
-            const { data, error } = await supabase.auth.signUp({
-                email: newUser.email,
-                password: newUser.password,
-            });
-            if (error) throw error;
-            return fromSupabase(supabase.from('users').insert([{ ...newUser, id: data.user.id }]));
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries('users');
-        },
-    });
-};
-
-export const useUpdateUser = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: ({ id, ...updateData }) => fromSupabase(supabase.from('users').update(updateData).eq('id', id)),
-        onSuccess: () => {
-            queryClient.invalidateQueries('users');
-        },
-    });
-};
-
-export const useDeleteUser = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: async (id) => {
-            await fromSupabase(supabase.from('users').delete().eq('id', id));
-            return fromSupabase(supabase.auth.admin.deleteUser(id));
-        },
-        onSuccess: () => {
-            queryClient.invalidateQueries('users');
         },
     });
 };
