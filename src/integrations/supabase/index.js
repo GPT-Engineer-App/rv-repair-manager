@@ -236,6 +236,34 @@ export const useDeletePreConfiguredRoofJob = () => {
     });
 };
 
+export const useRealtimePreConfiguredRoofJobs = () => {
+    const [jobs, setJobs] = useState([]);
+
+    useEffect(() => {
+        const subscription = supabase
+            .from('pre_configured_roof_jobs')
+            .on('*', payload => {
+                setJobs(currentJobs => {
+                    const updatedJobs = [...currentJobs];
+                    const index = updatedJobs.findIndex(job => job.id === payload.new.id);
+                    if (index !== -1) {
+                        updatedJobs[index] = payload.new;
+                    } else {
+                        updatedJobs.push(payload.new);
+                    }
+                    return updatedJobs;
+                });
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeSubscription(subscription);
+        };
+    }, []);
+
+    return { data: jobs, isLoading: false };
+};
+
 // Estimates hooks
 export const useEstimates = () => useQuery({
     queryKey: ['estimates'],
