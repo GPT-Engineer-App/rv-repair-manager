@@ -168,10 +168,113 @@ export const useAddEstimate = () => {
 };
 
 // Pre-configured Roof Jobs
+// Pre-configured Jobs
+export const usePreConfiguredJobs = () => useQuery({
+    queryKey: ['preConfiguredJobs'],
+    queryFn: () => fromSupabase(supabase.from('pre_configured_jobs').select('*'))
+});
+
+export const useAddPreConfiguredJob = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (newJob) => fromSupabase(supabase.from('pre_configured_jobs').insert([newJob])),
+        onSuccess: () => {
+            queryClient.invalidateQueries('preConfiguredJobs');
+        },
+    });
+};
+
+export const useUpdatePreConfiguredJob = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, ...updateData }) => fromSupabase(supabase.from('pre_configured_jobs').update(updateData).eq('id', id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('preConfiguredJobs');
+        },
+    });
+};
+
+export const useDeletePreConfiguredJob = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id) => fromSupabase(supabase.from('pre_configured_jobs').delete().eq('id', id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('preConfiguredJobs');
+        },
+    });
+};
+
+// Pre-configured Roof Jobs
 export const usePreConfiguredRoofJobs = () => useQuery({
     queryKey: ['preConfiguredRoofJobs'],
     queryFn: () => fromSupabase(supabase.from('pre_configured_roof_jobs').select('*'))
 });
+
+export const useAddPreConfiguredRoofJob = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (newJob) => fromSupabase(supabase.from('pre_configured_roof_jobs').insert([newJob])),
+        onSuccess: () => {
+            queryClient.invalidateQueries('preConfiguredRoofJobs');
+        },
+    });
+};
+
+export const useUpdatePreConfiguredRoofJob = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, ...updateData }) => fromSupabase(supabase.from('pre_configured_roof_jobs').update(updateData).eq('id', id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('preConfiguredRoofJobs');
+        },
+    });
+};
+
+export const useDeletePreConfiguredRoofJob = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id) => fromSupabase(supabase.from('pre_configured_roof_jobs').delete().eq('id', id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('preConfiguredRoofJobs');
+        },
+    });
+};
+
+// Pre-configured Floor Jobs
+export const usePreConfiguredFloorJobs = () => useQuery({
+    queryKey: ['preConfiguredFloorJobs'],
+    queryFn: () => fromSupabase(supabase.from('pre_configured_floor_jobs').select('*'))
+});
+
+export const useAddPreConfiguredFloorJob = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (newJob) => fromSupabase(supabase.from('pre_configured_floor_jobs').insert([newJob])),
+        onSuccess: () => {
+            queryClient.invalidateQueries('preConfiguredFloorJobs');
+        },
+    });
+};
+
+export const useUpdatePreConfiguredFloorJob = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, ...updateData }) => fromSupabase(supabase.from('pre_configured_floor_jobs').update(updateData).eq('id', id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('preConfiguredFloorJobs');
+        },
+    });
+};
+
+export const useDeletePreConfiguredFloorJob = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id) => fromSupabase(supabase.from('pre_configured_floor_jobs').delete().eq('id', id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('preConfiguredFloorJobs');
+        },
+    });
+};
 
 export const useUpdateEstimate = () => {
     const queryClient = useQueryClient();
