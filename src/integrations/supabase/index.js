@@ -19,15 +19,26 @@ const fromSupabase = async (query) => {
 
 /* supabase integration types
 
+### users
+
+| name       | type                     | format | required |
+|------------|--------------------------|--------|----------|
+| id         | uuid                     | string | true     |
+| email      | text                     | string | true     |
+| first_name | text                     | string | false    |
+| last_name  | text                     | string | false    |
+| role       | text                     | string | false    |
+| created_at | timestamp with time zone | string | true     |
+
 ### customers
 
-| name    | type   | format  | required |
-|---------|--------|---------|----------|
-| id      | int8   | number  | true     |
-| name    | text   | string  | true     |
-| address | text   | string  | true     |
-| phone   | text   | string  | true     |
-| email   | text   | string  | false    |
+| name    | type | format | required |
+|---------|------|--------|----------|
+| id      | int8 | number | true     |
+| name    | text | string | true     |
+| address | text | string | true     |
+| phone   | text | string | true     |
+| email   | text | string | false    |
 
 ### pre_configured_floor_jobs
 
@@ -35,8 +46,8 @@ const fromSupabase = async (query) => {
 |---------------|---------|--------|----------|
 | id            | int8    | number | true     |
 | job_code      | text    | string | true     |
-| parts         | jsonb   | json   | false    |
-| prices        | jsonb   | json   | false    |
+| parts         | jsonb   | object | false    |
+| prices        | jsonb   | object | false    |
 | labor_hours   | numeric | number | false    |
 | sublet_costs  | numeric | number | false    |
 | shop_supplies | numeric | number | false    |
@@ -49,8 +60,8 @@ const fromSupabase = async (query) => {
 |---------------|---------|--------|----------|
 | id            | int8    | number | true     |
 | job_code      | text    | string | true     |
-| parts         | jsonb   | json   | false    |
-| prices        | jsonb   | json   | false    |
+| parts         | jsonb   | object | false    |
+| prices        | jsonb   | object | false    |
 | labor_hours   | numeric | number | false    |
 | sublet_costs  | numeric | number | false    |
 | shop_supplies | numeric | number | false    |
@@ -59,41 +70,30 @@ const fromSupabase = async (query) => {
 
 ### estimates
 
-| name               | type                     | format  | required |
-|--------------------|--------------------------|---------|----------|
-| id                 | int8                     | number  | true     |
-| customer_id        | int8                     | number  | false    |
-| job_code           | text                     | string  | false    |
-| advisor            | text                     | string  | false    |
-| payment_type       | text                     | string  | false    |
-| deductible         | numeric                  | number  | false    |
-| estimate_date      | timestamp without time zone | string  | false    |
-| roof_kit           | jsonb                    | json    | false    |
-| roof_membrane      | jsonb                    | json    | false    |
-| floor_materials    | jsonb                    | json    | false    |
-| roofing_screws     | jsonb                    | json    | false    |
-| glue               | jsonb                    | json    | false    |
-| additional_parts   | jsonb                    | json    | false    |
-| repair_description | text                     | string  | false    |
-| notes              | text                     | string  | false    |
-| hours              | numeric                  | number  | false    |
-| labor_per_hour     | numeric                  | number  | false    |
-| sublet             | jsonb                    | json    | false    |
-| extras             | jsonb                    | json    | false    |
-| labor              | jsonb                    | json    | false    |
-| shop_supplies      | numeric                  | number  | false    |
-| tax                | numeric                  | number  | false    |
-
-### users
-
-| name       | type                    | format | required |
-|------------|-------------------------|--------|----------|
-| id         | uuid                    | string | true     |
-| email      | text                    | string | true     |
-| first_name | text                    | string | false    |
-| last_name  | text                    | string | false    |
-| role       | text                    | string | false    |
-| created_at | timestamp with time zone | string | true     |
+| name               | type                     | format | required |
+|--------------------|--------------------------|--------|----------|
+| id                 | int8                     | number | true     |
+| customer_id        | int8                     | number | false    |
+| job_code           | text                     | string | false    |
+| advisor            | text                     | string | false    |
+| payment_type       | text                     | string | false    |
+| deductible         | numeric                  | number | false    |
+| estimate_date      | timestamp with time zone | string | false    |
+| roof_kit           | jsonb                    | object | false    |
+| roof_membrane      | jsonb                    | object | false    |
+| floor_materials    | jsonb                    | object | false    |
+| roofing_screws     | jsonb                    | object | false    |
+| glue               | jsonb                    | object | false    |
+| additional_parts   | jsonb                    | object | false    |
+| repair_description | text                     | string | false    |
+| notes              | text                     | string | false    |
+| hours              | numeric                  | number | false    |
+| labor_per_hour     | numeric                  | number | false    |
+| sublet             | jsonb                    | object | false    |
+| extras             | jsonb                    | object | false    |
+| labor              | jsonb                    | object | false    |
+| shop_supplies      | numeric                  | number | false    |
+| tax                | numeric                  | number | false    |
 
 ### pre_configured_jobs
 
@@ -102,8 +102,8 @@ const fromSupabase = async (query) => {
 | id               | int8    | number | true     |
 | job_code         | text    | string | true     |
 | type             | text    | string | true     |
-| parts            | jsonb   | json   | false    |
-| prices           | jsonb   | json   | false    |
+| parts            | jsonb   | object | false    |
+| prices           | jsonb   | object | false    |
 | labor_hour_rates | numeric | number | false    |
 | labor_hours      | numeric | number | false    |
 | sublet_costs     | numeric | number | false    |
@@ -113,15 +113,15 @@ const fromSupabase = async (query) => {
 
 */
 
-// Customers hooks
+// Customers
 export const useCustomers = () => useQuery({
     queryKey: ['customers'],
-    queryFn: () => fromSupabase(supabase.from('customers').select('*'))
+    queryFn: () => fromSupabase(supabase.from('customers').select('*')),
 });
 
 export const useCustomer = (id) => useQuery({
     queryKey: ['customers', id],
-    queryFn: () => fromSupabase(supabase.from('customers').select('*').eq('id', id).single())
+    queryFn: () => fromSupabase(supabase.from('customers').select('*').eq('id', id).single()),
 });
 
 export const useAddCustomer = () => {
@@ -154,15 +154,15 @@ export const useDeleteCustomer = () => {
     });
 };
 
-// Pre-configured Floor Jobs hooks
+// Pre-configured Floor Jobs
 export const usePreConfiguredFloorJobs = () => useQuery({
     queryKey: ['preConfiguredFloorJobs'],
-    queryFn: () => fromSupabase(supabase.from('pre_configured_floor_jobs').select('*'))
+    queryFn: () => fromSupabase(supabase.from('pre_configured_floor_jobs').select('*')),
 });
 
 export const usePreConfiguredFloorJob = (id) => useQuery({
     queryKey: ['preConfiguredFloorJobs', id],
-    queryFn: () => fromSupabase(supabase.from('pre_configured_floor_jobs').select('*').eq('id', id).single())
+    queryFn: () => fromSupabase(supabase.from('pre_configured_floor_jobs').select('*').eq('id', id).single()),
 });
 
 export const useAddPreConfiguredFloorJob = () => {
@@ -195,15 +195,15 @@ export const useDeletePreConfiguredFloorJob = () => {
     });
 };
 
-// Pre-configured Roof Jobs hooks
+// Pre-configured Roof Jobs
 export const usePreConfiguredRoofJobs = () => useQuery({
     queryKey: ['preConfiguredRoofJobs'],
-    queryFn: () => fromSupabase(supabase.from('pre_configured_roof_jobs').select('*'))
+    queryFn: () => fromSupabase(supabase.from('pre_configured_roof_jobs').select('*')),
 });
 
 export const usePreConfiguredRoofJob = (id) => useQuery({
     queryKey: ['preConfiguredRoofJobs', id],
-    queryFn: () => fromSupabase(supabase.from('pre_configured_roof_jobs').select('*').eq('id', id).single())
+    queryFn: () => fromSupabase(supabase.from('pre_configured_roof_jobs').select('*').eq('id', id).single()),
 });
 
 export const useAddPreConfiguredRoofJob = () => {
@@ -236,43 +236,15 @@ export const useDeletePreConfiguredRoofJob = () => {
     });
 };
 
-export const useRealtimePreConfiguredRoofJobs = () => {
-    const [jobs, setJobs] = useState([]);
-
-    useEffect(() => {
-        const subscription = supabase
-            .from('pre_configured_roof_jobs')
-            .on('*', payload => {
-                setJobs(currentJobs => {
-                    const updatedJobs = [...currentJobs];
-                    const index = updatedJobs.findIndex(job => job.id === payload.new.id);
-                    if (index !== -1) {
-                        updatedJobs[index] = payload.new;
-                    } else {
-                        updatedJobs.push(payload.new);
-                    }
-                    return updatedJobs;
-                });
-            })
-            .subscribe();
-
-        return () => {
-            supabase.removeSubscription(subscription);
-        };
-    }, []);
-
-    return { data: jobs, isLoading: false };
-};
-
-// Estimates hooks
+// Estimates
 export const useEstimates = () => useQuery({
     queryKey: ['estimates'],
-    queryFn: () => fromSupabase(supabase.from('estimates').select('*'))
+    queryFn: () => fromSupabase(supabase.from('estimates').select('*')),
 });
 
 export const useEstimate = (id) => useQuery({
     queryKey: ['estimates', id],
-    queryFn: () => fromSupabase(supabase.from('estimates').select('*').eq('id', id).single())
+    queryFn: () => fromSupabase(supabase.from('estimates').select('*').eq('id', id).single()),
 });
 
 export const useAddEstimate = () => {
@@ -305,15 +277,56 @@ export const useDeleteEstimate = () => {
     });
 };
 
-// Users hooks
+// Pre-configured Jobs
+export const usePreConfiguredJobs = () => useQuery({
+    queryKey: ['preConfiguredJobs'],
+    queryFn: () => fromSupabase(supabase.from('pre_configured_jobs').select('*')),
+});
+
+export const usePreConfiguredJob = (id) => useQuery({
+    queryKey: ['preConfiguredJobs', id],
+    queryFn: () => fromSupabase(supabase.from('pre_configured_jobs').select('*').eq('id', id).single()),
+});
+
+export const useAddPreConfiguredJob = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (newJob) => fromSupabase(supabase.from('pre_configured_jobs').insert([newJob])),
+        onSuccess: () => {
+            queryClient.invalidateQueries('preConfiguredJobs');
+        },
+    });
+};
+
+export const useUpdatePreConfiguredJob = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, ...updateData }) => fromSupabase(supabase.from('pre_configured_jobs').update(updateData).eq('id', id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('preConfiguredJobs');
+        },
+    });
+};
+
+export const useDeletePreConfiguredJob = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id) => fromSupabase(supabase.from('pre_configured_jobs').delete().eq('id', id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('preConfiguredJobs');
+        },
+    });
+};
+
+// User operations
 export const useUsers = () => useQuery({
     queryKey: ['users'],
-    queryFn: () => fromSupabase(supabase.from('users').select('*'))
+    queryFn: () => fromSupabase(supabase.from('users').select('*')),
 });
 
 export const useUser = (id) => useQuery({
     queryKey: ['users', id],
-    queryFn: () => fromSupabase(supabase.from('users').select('*').eq('id', id).single())
+    queryFn: () => fromSupabase(supabase.from('users').select('*').eq('id', id).single()),
 });
 
 export const useAddUser = () => {
@@ -346,43 +359,34 @@ export const useDeleteUser = () => {
     });
 };
 
-// Pre-configured Jobs hooks
-export const usePreConfiguredJobs = () => useQuery({
-    queryKey: ['preConfiguredJobs'],
-    queryFn: () => fromSupabase(supabase.from('pre_configured_jobs').select('*'))
-});
+// Realtime subscriptions
+export const useRealtimePreConfiguredRoofJobs = () => {
+    const [jobs, setJobs] = React.useState([]);
 
-export const usePreConfiguredJob = (id) => useQuery({
-    queryKey: ['preConfiguredJobs', id],
-    queryFn: () => fromSupabase(supabase.from('pre_configured_jobs').select('*').eq('id', id).single())
-});
+    React.useEffect(() => {
+        const subscription = supabase
+            .channel('pre_configured_roof_jobs_changes')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'pre_configured_roof_jobs' }, payload => {
+                console.log('Change received!', payload);
+                setJobs(currentJobs => {
+                    // Handle the change based on the event type (INSERT, UPDATE, DELETE)
+                    // This is a simple example and might need to be adjusted based on your needs
+                    if (payload.eventType === 'INSERT') {
+                        return [...currentJobs, payload.new];
+                    } else if (payload.eventType === 'UPDATE') {
+                        return currentJobs.map(job => job.id === payload.new.id ? payload.new : job);
+                    } else if (payload.eventType === 'DELETE') {
+                        return currentJobs.filter(job => job.id !== payload.old.id);
+                    }
+                    return currentJobs;
+                });
+            })
+            .subscribe();
 
-export const useAddPreConfiguredJob = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (newJob) => fromSupabase(supabase.from('pre_configured_jobs').insert([newJob])),
-        onSuccess: () => {
-            queryClient.invalidateQueries('preConfiguredJobs');
-        },
-    });
-};
+        return () => {
+            subscription.unsubscribe();
+        };
+    }, []);
 
-export const useUpdatePreConfiguredJob = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: ({ id, ...updateData }) => fromSupabase(supabase.from('pre_configured_jobs').update(updateData).eq('id', id)),
-        onSuccess: () => {
-            queryClient.invalidateQueries('preConfiguredJobs');
-        },
-    });
-};
-
-export const useDeletePreConfiguredJob = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (id) => fromSupabase(supabase.from('pre_configured_jobs').delete().eq('id', id)),
-        onSuccess: () => {
-            queryClient.invalidateQueries('preConfiguredJobs');
-        },
-    });
+    return { data: jobs };
 };
