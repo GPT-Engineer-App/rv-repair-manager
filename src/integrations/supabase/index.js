@@ -17,10 +17,9 @@ const fromSupabase = async (query) => {
     return data;
 };
 
-/* supabase integration types
+/* Supabase Database Schema
 
 ### customers
-
 | name    | type | format | required |
 |---------|------|--------|----------|
 | id      | int8 | number | true     |
@@ -29,77 +28,40 @@ const fromSupabase = async (query) => {
 | phone   | text | string | true     |
 | email   | text | string | false    |
 
-### pre_configured_floor_jobs
-
-| name         | type    | format | required |
-|--------------|---------|--------|----------|
-| id           | int8    | number | true     |
-| job_code     | text    | string | true     |
-| parts        | jsonb   | json   | false    |
-| prices       | jsonb   | json   | false    |
-| labor_hours  | numeric | number | false    |
-| sublet_costs | numeric | number | false    |
-| shop_supplies| numeric | number | false    |
-| taxes        | numeric | number | false    |
-| job_totals   | numeric | number | false    |
-
-### pre_configured_roof_jobs
-
-| name         | type    | format | required |
-|--------------|---------|--------|----------|
-| id           | int8    | number | true     |
-| job_code     | text    | string | true     |
-| parts        | jsonb   | json   | false    |
-| prices       | jsonb   | json   | false    |
-| labor_hours  | numeric | number | false    |
-| sublet_costs | numeric | number | false    |
-| shop_supplies| numeric | number | false    |
-| taxes        | numeric | number | false    |
-| job_totals   | numeric | number | false    |
-
-### estimates
-
-| name               | type                     | format   | required |
-|--------------------|--------------------------|----------|----------|
-| id                 | int8                     | number   | true     |
-| customer_id        | int8                     | number   | false    |
-| job_code           | text                     | string   | false    |
-| advisor            | text                     | string   | false    |
-| payment_type       | text                     | string   | false    |
-| deductible         | numeric                  | number   | false    |
-| estimate_date      | timestamp with time zone | datetime | false    |
-| roof_kit           | jsonb                    | json     | false    |
-| roof_membrane      | jsonb                    | json     | false    |
-| floor_materials    | jsonb                    | json     | false    |
-| roofing_screws     | jsonb                    | json     | false    |
-| glue               | jsonb                    | json     | false    |
-| additional_parts   | jsonb                    | json     | false    |
-| repair_description | text                     | string   | false    |
-| notes              | text                     | string   | false    |
-| hours              | numeric                  | number   | false    |
-| labor_per_hour     | numeric                  | number   | false    |
-| sublet             | jsonb                    | json     | false    |
-| extras             | jsonb                    | json     | false    |
-| labor              | jsonb                    | json     | false    |
-| shop_supplies      | numeric                  | number   | false    |
-| tax                | numeric                  | number   | false    |
-
-### pre_configured_jobs
-
+### jobs
 | name            | type    | format | required |
 |-----------------|---------|--------|----------|
 | id              | int8    | number | true     |
 | job_code        | text    | string | true     |
+| name            | text    | string | true     |
 | type            | text    | string | true     |
 | parts           | jsonb   | json   | false    |
 | prices          | jsonb   | json   | false    |
-| labor_hour_rates| numeric | number | false    |
+| labor_hour_rate | numeric | number | false    |
 | labor_hours     | numeric | number | false    |
 | sublet_costs    | numeric | number | false    |
 | shop_supplies   | numeric | number | false    |
 | taxes           | numeric | number | false    |
-| job_totals      | numeric | number | false    |
+| job_total       | numeric | number | false    |
 
+### estimates
+| name               | type                     | format   | required |
+|--------------------|--------------------------|----------|----------|
+| id                 | int8                     | number   | true     |
+| customer_id        | int8                     | number   | true     |
+| job_id             | int8                     | number   | true     |
+| advisor            | text                     | string   | false    |
+| payment_type       | text                     | string   | false    |
+| deductible         | numeric                  | number   | false    |
+| estimate_date      | timestamp with time zone | datetime | true     |
+| repair_description | text                     | string   | false    |
+| notes              | text                     | string   | false    |
+| total_parts        | numeric                  | number   | false    |
+| total_labor        | numeric                  | number   | false    |
+| total_sublet       | numeric                  | number   | false    |
+| total_shop_supplies| numeric                  | number   | false    |
+| total_tax          | numeric                  | number   | false    |
+| estimate_total     | numeric                  | number   | false    |
 */
 
 // Customers
@@ -143,84 +105,43 @@ export const useDeleteCustomer = () => {
     });
 };
 
-// Pre-configured Floor Jobs
-export const usePreConfiguredFloorJobs = () => useQuery({
-    queryKey: ['preConfiguredFloorJobs'],
-    queryFn: () => fromSupabase(supabase.from('pre_configured_floor_jobs').select('*'))
+// Jobs
+export const useJobs = () => useQuery({
+    queryKey: ['jobs'],
+    queryFn: () => fromSupabase(supabase.from('jobs').select('*'))
 });
 
-export const usePreConfiguredFloorJob = (id) => useQuery({
-    queryKey: ['preConfiguredFloorJobs', id],
-    queryFn: () => fromSupabase(supabase.from('pre_configured_floor_jobs').select('*').eq('id', id).single())
+export const useJob = (id) => useQuery({
+    queryKey: ['jobs', id],
+    queryFn: () => fromSupabase(supabase.from('jobs').select('*').eq('id', id).single())
 });
 
-export const useAddPreConfiguredFloorJob = () => {
+export const useAddJob = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (newJob) => fromSupabase(supabase.from('pre_configured_floor_jobs').insert([newJob])),
+        mutationFn: (newJob) => fromSupabase(supabase.from('jobs').insert([newJob])),
         onSuccess: () => {
-            queryClient.invalidateQueries('preConfiguredFloorJobs');
+            queryClient.invalidateQueries('jobs');
         },
     });
 };
 
-export const useUpdatePreConfiguredFloorJob = () => {
+export const useUpdateJob = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ id, ...updateData }) => fromSupabase(supabase.from('pre_configured_floor_jobs').update(updateData).eq('id', id)),
+        mutationFn: ({ id, ...updateData }) => fromSupabase(supabase.from('jobs').update(updateData).eq('id', id)),
         onSuccess: () => {
-            queryClient.invalidateQueries('preConfiguredFloorJobs');
+            queryClient.invalidateQueries('jobs');
         },
     });
 };
 
-export const useDeletePreConfiguredFloorJob = () => {
+export const useDeleteJob = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (id) => fromSupabase(supabase.from('pre_configured_floor_jobs').delete().eq('id', id)),
+        mutationFn: (id) => fromSupabase(supabase.from('jobs').delete().eq('id', id)),
         onSuccess: () => {
-            queryClient.invalidateQueries('preConfiguredFloorJobs');
-        },
-    });
-};
-
-// Pre-configured Roof Jobs
-export const usePreConfiguredRoofJobs = () => useQuery({
-    queryKey: ['preConfiguredRoofJobs'],
-    queryFn: () => fromSupabase(supabase.from('pre_configured_roof_jobs').select('*'))
-});
-
-export const usePreConfiguredRoofJob = (id) => useQuery({
-    queryKey: ['preConfiguredRoofJobs', id],
-    queryFn: () => fromSupabase(supabase.from('pre_configured_roof_jobs').select('*').eq('id', id).single())
-});
-
-export const useAddPreConfiguredRoofJob = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (newJob) => fromSupabase(supabase.from('pre_configured_roof_jobs').insert([newJob])),
-        onSuccess: () => {
-            queryClient.invalidateQueries('preConfiguredRoofJobs');
-        },
-    });
-};
-
-export const useUpdatePreConfiguredRoofJob = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: ({ id, ...updateData }) => fromSupabase(supabase.from('pre_configured_roof_jobs').update(updateData).eq('id', id)),
-        onSuccess: () => {
-            queryClient.invalidateQueries('preConfiguredRoofJobs');
-        },
-    });
-};
-
-export const useDeletePreConfiguredRoofJob = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (id) => fromSupabase(supabase.from('pre_configured_roof_jobs').delete().eq('id', id)),
-        onSuccess: () => {
-            queryClient.invalidateQueries('preConfiguredRoofJobs');
+            queryClient.invalidateQueries('jobs');
         },
     });
 };
@@ -262,47 +183,6 @@ export const useDeleteEstimate = () => {
         mutationFn: (id) => fromSupabase(supabase.from('estimates').delete().eq('id', id)),
         onSuccess: () => {
             queryClient.invalidateQueries('estimates');
-        },
-    });
-};
-
-// Pre-configured Jobs
-export const usePreConfiguredJobs = () => useQuery({
-    queryKey: ['preConfiguredJobs'],
-    queryFn: () => fromSupabase(supabase.from('pre_configured_jobs').select('*'))
-});
-
-export const usePreConfiguredJob = (id) => useQuery({
-    queryKey: ['preConfiguredJobs', id],
-    queryFn: () => fromSupabase(supabase.from('pre_configured_jobs').select('*').eq('id', id).single())
-});
-
-export const useAddPreConfiguredJob = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (newJob) => fromSupabase(supabase.from('pre_configured_jobs').insert([newJob])),
-        onSuccess: () => {
-            queryClient.invalidateQueries('preConfiguredJobs');
-        },
-    });
-};
-
-export const useUpdatePreConfiguredJob = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: ({ id, ...updateData }) => fromSupabase(supabase.from('pre_configured_jobs').update(updateData).eq('id', id)),
-        onSuccess: () => {
-            queryClient.invalidateQueries('preConfiguredJobs');
-        },
-    });
-};
-
-export const useDeletePreConfiguredJob = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (id) => fromSupabase(supabase.from('pre_configured_jobs').delete().eq('id', id)),
-        onSuccess: () => {
-            queryClient.invalidateQueries('preConfiguredJobs');
         },
     });
 };
