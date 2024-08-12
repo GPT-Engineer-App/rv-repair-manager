@@ -1,10 +1,10 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAddEstimate } from "@/integrations/supabase"
+import { useAddEstimate, usePreConfiguredRoofJobs } from "@/integrations/supabase"
 
 const EstimateBuilder = () => {
   const [activeTab, setActiveTab] = useState("customer")
@@ -15,24 +15,12 @@ const EstimateBuilder = () => {
     payment_type: "",
     deductible: "",
     estimate_date: new Date().toISOString(),
-    floor_plywood_osb: "",
-    subfloor_adhesive: "",
-    screws_washers: "",
-    floor_sealant: "",
-    underbelly_material: "",
-    insulation: "",
-    floor_covering: "",
-    transition_strips: "",
-    floor_trim_molding: "",
-    fasteners: "",
-    waterproof_membrane: "",
-    drainage_system: "",
-    ventilation_materials: "",
-    epoxy_resin: "",
-    joist_reinforcement_materials: "",
-    paint_coating: "",
-    gasket_material: "",
-    hardware_floor_retention: "",
+    roof_kit: "",
+    roof_membrane: "",
+    slf_leveling_dicor: "",
+    non_leveling_dicor: "",
+    roof_screws: "",
+    glue: "",
     additional_parts: [],
     repair_description: "",
     notes: "",
@@ -44,6 +32,8 @@ const EstimateBuilder = () => {
     shop_supplies: "",
     tax: ""
   })
+
+  const { data: preConfiguredJobs, isLoading: jobsLoading } = usePreConfiguredRoofJobs()
 
   const { mutate: addEstimate, isLoading, isError, error } = useAddEstimate()
 
@@ -91,25 +81,22 @@ const EstimateBuilder = () => {
             <TabsContent value="job">
               <h2 className="text-2xl font-semibold mb-4">Job Details</h2>
               <form className="space-y-4">
-                <Input name="job_code" placeholder="Job Code" onChange={handleInputChange} />
-                <Input name="floor_plywood_osb" placeholder="Floor Plywood/OSB" onChange={handleInputChange} />
-                <Input name="subfloor_adhesive" placeholder="Subfloor Adhesive" onChange={handleInputChange} />
-                <Input name="screws_washers" placeholder="Screws and Washers" onChange={handleInputChange} />
-                <Input name="floor_sealant" placeholder="Floor Sealant" onChange={handleInputChange} />
-                <Input name="underbelly_material" placeholder="Underbelly Material" onChange={handleInputChange} />
-                <Input name="insulation" placeholder="Insulation" onChange={handleInputChange} />
-                <Input name="floor_covering" placeholder="Floor Covering" onChange={handleInputChange} />
-                <Input name="transition_strips" placeholder="Transition Strips" onChange={handleInputChange} />
-                <Input name="floor_trim_molding" placeholder="Floor Trim and Molding" onChange={handleInputChange} />
-                <Input name="fasteners" placeholder="Fasteners" onChange={handleInputChange} />
-                <Input name="waterproof_membrane" placeholder="Waterproof Membrane" onChange={handleInputChange} />
-                <Input name="drainage_system" placeholder="Drainage System" onChange={handleInputChange} />
-                <Input name="ventilation_materials" placeholder="Ventilation Materials" onChange={handleInputChange} />
-                <Input name="epoxy_resin" placeholder="Epoxy Resin" onChange={handleInputChange} />
-                <Input name="joist_reinforcement_materials" placeholder="Joist Reinforcement Materials" onChange={handleInputChange} />
-                <Input name="paint_coating" placeholder="Paint or Coating" onChange={handleInputChange} />
-                <Input name="gasket_material" placeholder="Gasket Material" onChange={handleInputChange} />
-                <Input name="hardware_floor_retention" placeholder="Hardware for Floor Retention" onChange={handleInputChange} />
+                <Select name="job_code" onValueChange={(value) => handleInputChange({ target: { name: 'job_code', value } })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Pre-configured Job" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {preConfiguredJobs?.map((job) => (
+                      <SelectItem key={job.job_code} value={job.job_code}>{job.job_name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input name="roof_kit" placeholder="Roof Kit" onChange={handleInputChange} />
+                <Input name="roof_membrane" placeholder="Roof Membrane" onChange={handleInputChange} />
+                <Input name="slf_leveling_dicor" placeholder="SLF Leveling Dicor" onChange={handleInputChange} />
+                <Input name="non_leveling_dicor" placeholder="Non Leveling Dicor" onChange={handleInputChange} />
+                <Input name="roof_screws" placeholder="Roof Screws" onChange={handleInputChange} />
+                <Input name="glue" placeholder="Glue" onChange={handleInputChange} />
                 <Input name="repair_description" placeholder="Repair Description" onChange={handleInputChange} />
                 <Input name="notes" placeholder="Additional Notes" onChange={handleInputChange} />
                 <Button onClick={() => setActiveTab("parts")}>Next</Button>

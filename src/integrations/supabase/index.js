@@ -160,12 +160,18 @@ export const useEstimate = (id) => useQuery({
 export const useAddEstimate = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (newEstimate) => fromSupabase(supabase.from('floor_estimates').insert([newEstimate])),
+        mutationFn: (newEstimate) => fromSupabase(supabase.from('estimates').insert([newEstimate])),
         onSuccess: () => {
             queryClient.invalidateQueries('estimates');
         },
     });
 };
+
+// Pre-configured Roof Jobs
+export const usePreConfiguredRoofJobs = () => useQuery({
+    queryKey: ['preConfiguredRoofJobs'],
+    queryFn: () => fromSupabase(supabase.from('pre_configured_roof_jobs').select('*'))
+});
 
 export const useUpdateEstimate = () => {
     const queryClient = useQueryClient();
