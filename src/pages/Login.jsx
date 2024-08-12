@@ -4,20 +4,36 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { supabase } from "@/integrations/supabase"
+import { useNavigate } from "react-router-dom"
+import { useToast } from "@/components/ui/use-toast"
 
 const Login = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
+  const { toast } = useToast()
 
   const handleLogin = async (e) => {
     e.preventDefault()
+    setIsLoading(true)
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
-      // Redirect or update state on successful login
+      toast({
+        title: "Login successful",
+        description: "You have been logged in successfully.",
+      })
+      navigate("/")
     } catch (error) {
       console.error('Error logging in:', error.message)
-      // Handle login error (e.g., show error message to user)
+      toast({
+        title: "Login failed",
+        description: error.message,
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -54,7 +70,9 @@ const Login = () => {
                 />
               </div>
             </div>
-            <Button className="w-full mt-6" type="submit">Login</Button>
+            <Button className="w-full mt-6" type="submit" disabled={isLoading}>
+              {isLoading ? "Logging in..." : "Login"}
+            </Button>
           </form>
         </CardContent>
         <CardFooter>
