@@ -25,6 +25,8 @@ const Login = () => {
       if (error) {
         if (error.message === 'Invalid login credentials') {
           throw new Error('Invalid email or password. Please try again.')
+        } else if (error.message.includes('Failed to fetch')) {
+          throw new Error('Network error. Please check your internet connection and try again.')
         } else {
           throw new Error(`Login failed: ${error.message}`)
         }
@@ -43,11 +45,6 @@ const Login = () => {
       toast({
         title: "Login failed",
         description: error.message,
-        variant: "destructive",
-      })
-      toast({
-        title: "Login failed",
-        description: "Please check your credentials and try again.",
         variant: "destructive",
       })
     } finally {
