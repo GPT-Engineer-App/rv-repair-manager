@@ -23,13 +23,7 @@ const Login = () => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) {
-        if (error.message === 'Invalid login credentials') {
-          throw new Error('Invalid email or password. Please try again.')
-        } else if (error.message.includes('Failed to fetch')) {
-          throw new Error('Network error. Please check your internet connection and try again.')
-        } else {
-          throw new Error(`Login failed: ${error.message}`)
-        }
+        throw error
       }
       if (!data.user) {
         throw new Error('No user data returned. Please try again.')
