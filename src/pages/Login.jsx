@@ -6,17 +6,20 @@ import { Label } from "@/components/ui/label"
 import { supabase } from "@/integrations/supabase"
 import { useNavigate } from "react-router-dom"
 import { useToast } from "@/components/ui/use-toast"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 const Login = () => {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
   const navigate = useNavigate()
   const { toast } = useToast()
 
   const handleLogin = async (e) => {
     e.preventDefault()
     setIsLoading(true)
+    setError(null)
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) throw error
@@ -27,9 +30,10 @@ const Login = () => {
       navigate("/")
     } catch (error) {
       console.error('Error logging in:', error.message)
+      setError(error.message)
       toast({
         title: "Login failed",
-        description: error.message,
+        description: "Please check your credentials and try again.",
         variant: "destructive",
       })
     } finally {
@@ -70,6 +74,11 @@ const Login = () => {
                 />
               </div>
             </div>
+            {error && (
+              <Alert variant="destructive" className="mt-4">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
             <Button className="w-full mt-6" type="submit" disabled={isLoading}>
               {isLoading ? "Logging in..." : "Login"}
             </Button>
