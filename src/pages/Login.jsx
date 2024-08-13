@@ -35,7 +35,7 @@ const Login = () => {
       navigate("/")
     } catch (error) {
       console.error('Error logging in:', error.message)
-      setError(error.message)
+      setError("Invalid email or password. Please try again.")
       toast({
         title: "Login failed",
         description: "Invalid email or password. Please try again.",
