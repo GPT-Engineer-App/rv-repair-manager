@@ -236,6 +236,37 @@ export const useDeletePreConfiguredRoofJob = () => {
     });
 };
 
+export const useRealtimePreConfiguredRoofJobs = () => {
+    const [jobs, setJobs] = useState([]);
+
+    useEffect(() => {
+        const channel = supabase
+            .channel('pre_configured_roof_jobs')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'pre_configured_roof_jobs' }, payload => {
+                console.log('Change received!', payload);
+                setJobs(currentJobs => {
+                    // Update the jobs array based on the change
+                    // This is a simple implementation and might need to be adjusted based on your exact needs
+                    if (payload.eventType === 'INSERT') {
+                        return [...currentJobs, payload.new];
+                    } else if (payload.eventType === 'UPDATE') {
+                        return currentJobs.map(job => job.id === payload.new.id ? payload.new : job);
+                    } else if (payload.eventType === 'DELETE') {
+                        return currentJobs.filter(job => job.id !== payload.old.id);
+                    }
+                    return currentJobs;
+                });
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, []);
+
+    return { data: jobs, isLoading: false };
+};
+
 // Estimates hooks
 export const useEstimates = () => useQuery({
     queryKey: ['estimates'],
