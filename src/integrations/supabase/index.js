@@ -1,11 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 import { useQuery, useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React from "react";
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_PROJECT_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_API_KEY;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
+import React from "react";
 export const queryClient = new QueryClient();
 export function SupabaseProvider({ children }) {
     return React.createElement(QueryClientProvider, { client: queryClient }, children);
@@ -17,68 +17,55 @@ const fromSupabase = async (query) => {
     return data;
 };
 
-// Customers
-export const useCustomers = () => useQuery({
-    queryKey: ['customers'],
-    queryFn: () => fromSupabase(supabase.from('customers').select('*'))
-});
+/* supabase integration types
 
-// Pre-configured Jobs
-export const usePreConfiguredRoofJobs = () => useQuery({
-    queryKey: ['preConfiguredJobs'],
-    queryFn: () => fromSupabase(supabase.from('pre_configured_jobs').select('*'))
-});
+// EXAMPLE TYPES SECTION
+// DO NOT USE TYPESCRIPT
 
-// Estimates
-export const useEstimates = () => useQuery({
-    queryKey: ['estimates'],
-    queryFn: () => fromSupabase(supabase.from('estimates').select('*'))
-});
+### foos
 
-export const useAddEstimate = () => {
+| name    | type | format | required |
+|---------|------|--------|----------|
+| id      | int8 | number | true     |
+| title   | text | string | true     |
+| date    | date | string | true     |
+
+### bars
+
+| name    | type | format | required |
+|---------|------|--------|----------|
+| id      | int8 | number | true     |
+| foo_id  | int8 | number | true     |  // foreign key to foos
+	
+*/
+
+// Example hook for models
+
+export const useFoo = ()=> useQuery({
+    queryKey: ['foos'],
+    queryFn: fromSupabase(supabase.from('foos')),
+})
+export const useAddFoo = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (newEstimate) => fromSupabase(supabase.from('estimates').insert(newEstimate)),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['estimates'] });
+        mutationFn: (newFoo)=> fromSupabase(supabase.from('foos').insert([{ title: newFoo.title }])),
+        onSuccess: ()=> {
+            queryClient.invalidateQueries('foos');
         },
     });
 };
 
-// Users
-export const useUsers = () => useQuery({
-    queryKey: ['users'],
-    queryFn: () => fromSupabase(supabase.from('users').select('*'))
-});
-
-export const useAddUser = () => {
+export const useBar = ()=> useQuery({
+    queryKey: ['bars'],
+    queryFn: fromSupabase(supabase.from('bars')),
+})
+export const useAddBar = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (newUser) => fromSupabase(supabase.from('users').insert(newUser)),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['users'] });
+        mutationFn: (newBar)=> fromSupabase(supabase.from('bars').insert([{ foo_id: newBar.foo_id }])),
+        onSuccess: ()=> {
+            queryClient.invalidateQueries('bars');
         },
     });
 };
 
-export const useUpdateUser = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (updatedUser) => fromSupabase(supabase.from('users').update(updatedUser).eq('id', updatedUser.id)),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['users'] });
-        },
-    });
-};
-
-export const useDeleteUser = () => {
-    const queryClient = useQueryClient();
-    return useMutation({
-        mutationFn: (userId) => fromSupabase(supabase.from('users').delete().eq('id', userId)),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['users'] });
-        },
-    });
-};
-
-// Add other necessary hooks and functions here
