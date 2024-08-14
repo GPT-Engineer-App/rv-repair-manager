@@ -17,4 +17,25 @@ const fromSupabase = async (query) => {
     return data;
 };
 
-// ... (keep the rest of the file as is, including all the hooks for customers, jobs, estimates, etc.)
+// Customers
+export const useCustomers = () => useQuery(['customers'], () => fromSupabase(supabase.from('customers').select('*')));
+
+// Pre-configured Jobs
+export const usePreConfiguredRoofJobs = () => useQuery(['preConfiguredJobs'], () => fromSupabase(supabase.from('pre_configured_jobs').select('*')));
+
+// Estimates
+export const useEstimates = () => useQuery(['estimates'], () => fromSupabase(supabase.from('estimates').select('*')));
+
+export const useAddEstimate = () => {
+    const queryClient = useQueryClient();
+    return useMutation(
+        (newEstimate) => fromSupabase(supabase.from('estimates').insert(newEstimate)),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries(['estimates']);
+            },
+        }
+    );
+};
+
+// Add other necessary hooks and functions here
