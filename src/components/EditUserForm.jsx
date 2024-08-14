@@ -1,26 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useToast } from "@/components/ui/use-toast";
 import { useUpdateUser } from "@/integrations/supabase";
 
-const EditUserForm = ({ userId, onClose, initialData, onUpdate }) => {
+const EditUserForm = ({ userId, onClose, initialData }) => {
   const [name, setName] = useState(initialData.name || '');
   const [email, setEmail] = useState(initialData.email || '');
   const [role, setRole] = useState(initialData.role || '');
   const [dealership, setDealership] = useState(initialData.dealership || '');
 
   const updateUser = useUpdateUser();
+  const { toast } = useToast();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    updateUser.mutate({ id: userId, name, email, role, dealership }, {
-      onSuccess: () => {
-        onUpdate({ id: userId, name, email, role, dealership });
-        onClose();
-      }
-    });
+    try {
+      await updateUser.mutateAsync({ id: userId, name, email, role, dealership });
+      toast({ title: "User updated successfully" });
+      onClose();
+    } catch (error) {
+      toast({ title: "Error updating user", description: error.message, variant: "destructive" });
+    }
   };
 
   return (
