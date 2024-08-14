@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAddEstimate, usePreConfiguredRoofJobs, useCustomers } from "@/integrations/supabase"
 import { useToast } from "@/components/ui/use-toast"
@@ -38,12 +38,6 @@ const EstimateBuilder = () => {
   const { data: customers, isLoading: customersLoading } = useCustomers()
   const { mutate: addEstimate, isLoading, isError, error } = useAddEstimate()
   const { toast } = useToast()
-
-  useEffect(() => {
-    if (preConfiguredJobs && preConfiguredJobs.length > 0) {
-      console.log("Pre-configured jobs updated:", preConfiguredJobs);
-    }
-  }, [preConfiguredJobs]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -94,8 +88,9 @@ const EstimateBuilder = () => {
                     <SelectValue placeholder="Select Customer" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="1">John Doe</SelectItem>
-                    <SelectItem value="2">Jane Smith</SelectItem>
+                    {customers?.map((customer) => (
+                      <SelectItem key={customer.id} value={customer.id.toString()}>{customer.name}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <Input name="advisor" placeholder="Advisor" onChange={handleInputChange} />
