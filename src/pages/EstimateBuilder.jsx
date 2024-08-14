@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useAddEstimate, useRealtimePreConfiguredRoofJobs, useCustomers } from "@/integrations/supabase"
+import { useAddEstimate, usePreConfiguredRoofJobs, useCustomers } from "@/integrations/supabase"
 import { useToast } from "@/components/ui/use-toast"
 
 const EstimateBuilder = () => {
@@ -34,7 +34,7 @@ const EstimateBuilder = () => {
     tax: ""
   })
 
-  const { data: preConfiguredJobs, isLoading: jobsLoading } = useRealtimePreConfiguredRoofJobs()
+  const { data: preConfiguredJobs, isLoading: jobsLoading } = usePreConfiguredRoofJobs()
   const { data: customers, isLoading: customersLoading } = useCustomers()
   const { mutate: addEstimate, isLoading, isError, error } = useAddEstimate()
   const { toast } = useToast()
