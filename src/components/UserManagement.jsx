@@ -15,6 +15,11 @@ const UserManagement = () => {
   const deleteUser = useDeleteUser();
   const { toast } = useToast();
 
+  useEffect(() => {
+    // Handle some side effect here, e.g., make an API call
+    console.log('Component mounted!');
+  }, []);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNewUser(prev => ({ ...prev, [name]: value }));
