@@ -1,26 +1,30 @@
 import React, { useState } from 'react';
-import { useUpdateUser } from '@/integrations/supabase';
+import { useAddUser } from '@/integrations/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 
-const EditUserForm = ({ user }) => {
-  const [name, setName] = useState(user.name);
-  const [email, setEmail] = useState(user.email);
-  const [role, setRole] = useState(user.role);
-  const [dealership, setDealership] = useState(user.dealership);
+const AddUserForm = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [role, setRole] = useState('');
+  const [dealership, setDealership] = useState('');
 
-  const updateUser = useUpdateUser();
+  const addUser = useAddUser();
   const { toast } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateUser.mutateAsync({ id: user.id, name, email, role, dealership });
-      toast({ title: "User updated successfully" });
+      await addUser.mutateAsync({ name, email, role, dealership });
+      setName('');
+      setEmail('');
+      setRole('');
+      setDealership('');
+      toast({ title: "User added successfully" });
     } catch (error) {
-      toast({ title: "Error updating user", description: error.message, variant: "destructive" });
+      toast({ title: "Error adding user", description: error.message, variant: "destructive" });
     }
   };
 
@@ -58,9 +62,9 @@ const EditUserForm = ({ user }) => {
         onChange={(e) => setDealership(e.target.value)}
         required
       />
-      <Button type="submit">Update User</Button>
+      <Button type="submit">Add User</Button>
     </form>
   );
 };
 
-export default EditUserForm;
+export default AddUserForm;
