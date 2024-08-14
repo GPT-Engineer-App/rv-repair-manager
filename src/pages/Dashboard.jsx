@@ -1,24 +1,18 @@
-import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { BarChart, Users, FileText, Settings, DollarSign, Clock, UserPlus } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { useEstimates, useCustomers, useUsers } from "@/integrations/supabase"
+import { useEstimates, useCustomers } from "@/integrations/supabase"
 
 const Dashboard = () => {
   const navigate = useNavigate()
-  const { data: estimates, isLoading: estimatesLoading } = useEstimates()
-  const { data: customers, isLoading: customersLoading } = useCustomers()
-  const { data: users, isLoading: usersLoading } = useUsers()
+  const { data: estimates } = useEstimates()
+  const { data: customers } = useCustomers()
 
   const totalEstimates = estimates?.length || 0
   const pendingEstimates = estimates?.filter(e => e.status === 'pending').length || 0
   const totalCustomers = customers?.length || 0
   const totalRevenue = estimates?.reduce((sum, e) => sum + (e.estimate_total || 0), 0) || 0
-
-  if (estimatesLoading || customersLoading || usersLoading) {
-    return <div>Loading...</div>
-  }
 
   return (
     <div className="container mx-auto p-4">
