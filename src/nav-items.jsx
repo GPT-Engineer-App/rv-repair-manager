@@ -1,5 +1,4 @@
-import { Home, Settings, FileText, Users, BarChart, Wrench, LogIn } from "lucide-react";
-import Login from "./pages/Login.jsx";
+import { Home, Settings, FileText, Users, BarChart, Wrench } from "lucide-react";
 import Dashboard from "./pages/Dashboard.jsx";
 import JobConfiguration from "./pages/JobConfiguration.jsx";
 import EstimateBuilder from "./pages/EstimateBuilder.jsx";
@@ -11,12 +10,6 @@ import SettingsAdmin from "./pages/SettingsAdmin.jsx";
  * Central place for defining the navigation items. Used for navigation components and routing.
  */
 export const navItems = [
-  {
-    title: "Login",
-    to: "/login",
-    icon: <LogIn className="h-4 w-4" />,
-    page: <Login />,
-  },
   {
     title: "Dashboard",
     to: "/",
