@@ -6,29 +6,16 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_PROJECT_URL;
 const supabaseKey = import.meta.env.VITE_SUPABASE_API_KEY;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Utility function to handle Supabase queries
-const fromSupabase = async (query) => {
-  const { data, error } = await query;
-  if (error) throw new Error(error.message);
-  return data;
-};
-
-// Estimates
-export const useEstimates = () => useQuery({
-  queryKey: ['estimates'],
-  queryFn: () => fromSupabase(supabase.from('estimates').select('*'))
-});
-
-// Customers
-export const useCustomers = () => useQuery({
-  queryKey: ['customers'],
-  queryFn: () => fromSupabase(supabase.from('customers').select('*'))
-});
+// ... (keep existing code)
 
 // Users
 export const useUsers = () => useQuery({
   queryKey: ['users'],
-  queryFn: () => fromSupabase(supabase.from('users').select('*'))
+  queryFn: async () => {
+    const { data, error } = await supabase.from('users').select('*');
+    if (error) throw new Error(error.message);
+    return data;
+  }
 });
 
 export const useAddUser = () => {
@@ -53,10 +40,7 @@ export const useUpdateUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ id, ...updateData }) => {
-      const { data, error } = await supabase
-        .from('users')
-        .update(updateData)
-        .eq('id', id);
+      const { data, error } = await supabase.from('users').update(updateData).eq('id', id);
       if (error) throw new Error(error.message);
       return data;
     },
@@ -74,10 +58,7 @@ export const useDeleteUser = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id) => {
-      const { data, error } = await supabase
-        .from('users')
-        .delete()
-        .eq('id', id);
+      const { data, error } = await supabase.from('users').delete().eq('id', id);
       if (error) throw new Error(error.message);
       return data;
     },
@@ -91,4 +72,4 @@ export const useDeleteUser = () => {
   });
 };
 
-// Add any other Supabase-related hooks or functions here
+// ... (keep other existing code)
