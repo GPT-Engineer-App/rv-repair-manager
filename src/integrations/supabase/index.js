@@ -335,11 +335,6 @@ export const usePreConfiguredRoofJobs = () => useQuery({
     queryFn: () => fromSupabase(supabase.from('pre_configured_roof_jobs').select('*'))
 });
 
-export const usePreConfiguredRoofJobs = () => useQuery({
-    queryKey: ['preConfiguredRoofJobs'],
-    queryFn: () => fromSupabase(supabase.from('pre_configured_roof_jobs').select('*'))
-});
-
 export const useAddPreConfiguredJob = () => {
     const queryClient = useQueryClient();
     return useMutation({
