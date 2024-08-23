@@ -1,27 +1,22 @@
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { BarChart, Users, FileText, Settings, DollarSign, Clock, UserPlus } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useEstimates, useCustomers } from "@/integrations/supabase";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { BarChart, Users, FileText, Settings, DollarSign, Clock, UserPlus } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { useEstimates, useCustomers } from "@/integrations/supabase"
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-  const { data: estimates, isLoading: estimatesLoading } = useEstimates();
-  const { data: customers, isLoading: customersLoading } = useCustomers();
+  const navigate = useNavigate()
+  const { data: estimates } = useEstimates()
+  const { data: customers } = useCustomers()
 
-  if (estimatesLoading || customersLoading) {
-    return <div className="text-center">Loading...</div>;
-  }
-
-  const totalEstimates = estimates?.length || 0;
-  const pendingEstimates = estimates?.filter(e => e.status === 'pending').length || 0;
-  const totalCustomers = customers?.length || 0;
-  const totalRevenue = estimates?.reduce((sum, e) => sum + (e.estimate_total || 0), 0) || 0;
+  const totalEstimates = estimates?.length || 0
+  const pendingEstimates = estimates?.filter(e => e.status === 'pending').length || 0
+  const totalCustomers = customers?.length || 0
+  const totalRevenue = estimates?.reduce((sum, e) => sum + (e.estimate_total || 0), 0) || 0
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Dashboard</h1>
+    <div className="container mx-auto p-4">
+      <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -60,7 +55,7 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle>Recent Estimates</CardTitle>
@@ -94,7 +89,7 @@ const Dashboard = () => {
         </Card>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Dashboard;
+export default Dashboard
