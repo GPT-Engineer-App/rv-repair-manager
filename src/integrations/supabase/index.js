@@ -47,16 +47,4 @@ export const useDeleteUser = () => {
     });
 };
 
-// Estimates
-export const useEstimates = () => useQuery({
-    queryKey: ['estimates'],
-    queryFn: () => fromSupabase(supabase.from('estimates').select('*'))
-});
-
-// Customers
-export const useCustomers = () => useQuery({
-    queryKey: ['customers'],
-    queryFn: () => fromSupabase(supabase.from('customers').select('*'))
-});
-
 // Add other necessary hooks and functions here...
